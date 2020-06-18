@@ -3302,3 +3302,15 @@ a	b	c
 SET @@sort_buffer_size= @save_sort_buffer_size;
 SET @@max_sort_length= @save_max_sort_length;
 DROP TABLE t1;
+#
+# MDEV-18949: Analyze show ref(const,const) when we are using index scan
+#
+CREATE TABLE t1 (a INT, b INT, KEY (a), KEY (b));
+INSERT INTO t1 SELECT seq%2, seq FROM seq_1_to_100;
+EXPLAIN SELECT a,b FROM t1 WHERE a=1 ORDER BY b LIMIT 5;
+id	select_type	table	type	possible_keys	key	key_len	ref	rows	Extra
+1	SIMPLE	t1	index	a	b	5	NULL	7	Using where
+ANALYZE SELECT a,b FROM t1 WHERE a=1 ORDER BY b LIMIT 5;
+id	select_type	table	type	possible_keys	key	key_len	ref	rows	r_rows	filtered	r_filtered	Extra
+1	SIMPLE	t1	index	a	b	5	NULL	7	9.00	100.00	55.56	Using where
+DROP TABLE t1;

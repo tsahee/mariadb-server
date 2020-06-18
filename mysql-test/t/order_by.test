@@ -2174,3 +2174,14 @@ SELECT * FROM t1 ORDER BY a,b;
 SET @@sort_buffer_size= @save_sort_buffer_size;
 SET @@max_sort_length= @save_max_sort_length;
 DROP TABLE t1;
+
+--echo #
+--echo # MDEV-18949: Analyze show ref(const,const) when we are using index scan
+--echo #
+
+--source include/have_sequence.inc
+CREATE TABLE t1 (a INT, b INT, KEY (a), KEY (b));
+INSERT INTO t1 SELECT seq%2, seq FROM seq_1_to_100;
+EXPLAIN SELECT a,b FROM t1 WHERE a=1 ORDER BY b LIMIT 5;
+ANALYZE SELECT a,b FROM t1 WHERE a=1 ORDER BY b LIMIT 5;
+DROP TABLE t1;

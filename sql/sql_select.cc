@@ -1896,7 +1896,7 @@ JOIN::optimize_inner()
       'limit' should not be enforced yet in the call to
       'test_if_skip_sort_order'.
     */
-    const ha_rows limit = need_tmp ? HA_POS_ERROR : unit->select_limit_cnt;
+    const ha_rows limit = need_tmp ? HA_POS_ERROR : select_limit;
 
     if (!(select_options & SELECT_BIG_RESULT) &&
         ((group_list &&
@@ -3226,9 +3226,7 @@ void JOIN::exec_inner()
       const ha_rows filesort_limit_arg=
         (has_group_by || curr_join->table_count > 1)
         ? curr_join->select_limit : unit->select_limit_cnt;
-      const ha_rows select_limit_arg=
-        select_options & OPTION_FOUND_ROWS
-        ? HA_POS_ERROR : unit->select_limit_cnt;
+
       curr_join->filesort_found_rows= filesort_limit_arg != HA_POS_ERROR;
 
       DBUG_PRINT("info", ("has_group_by %d "
@@ -3243,7 +3241,7 @@ void JOIN::exec_inner()
                             curr_join,
                             order_arg,
                             filesort_limit_arg,
-                            select_limit_arg,
+                            select_limit,
                             curr_join->group_list ? FALSE : TRUE))
 	DBUG_VOID_RETURN;
       sortorder= curr_join->sortorder;
@@ -21514,14 +21512,11 @@ check_reverse_order:
         }
 
         table->file->ha_index_or_rnd_end();
-        if (tab->join->select_options & SELECT_DESCRIBE)
-        {
-          tab->ref.key= -1;
-          tab->ref.key_parts= 0;
-          if (select_limit < table->stat_records())
-            tab->limit= select_limit;
-          table->disable_keyread();
-        }
+        tab->ref.key= -1;
+        tab->ref.key_parts= 0;
+        if (select_limit < table->stat_records())
+          tab->limit= select_limit;
+        table->disable_keyread();
       }
       else if (tab->type != JT_ALL || tab->select->quick)
       {
