@@ -1419,6 +1419,14 @@ public:
   bool histograms_are_read;
   MDL_ticket *mdl_ticket;
 
+  /*
+    Set to TRUE if the quick structures (used by the range optimizer) are
+    initialized.
+
+    FALSE otherwise
+  */
+  bool quick_structures_initialized;
+
   inline void reset() { bzero((void*)this, sizeof(*this)); }
   void init(THD *thd, TABLE_LIST *tl);
   bool fill_item_list(List<Item> *item_list) const;

@@ -4224,7 +4224,7 @@ void TABLE::init(THD *thd, TABLE_LIST *tl)
   cond_selectivity= 1.0;
   cond_selectivity_sampling_explain= NULL;
   quick_condition_rows=0;
-  initialize_quick_structures();
+  quick_structures_initialized= FALSE;
 #ifdef HAVE_REPLICATION
   /* used in RBR Triggers */
   master_had_triggers= 0;
@@ -7623,8 +7623,8 @@ bool fk_modifies_child(enum_fk_option opt)
 
 void TABLE::initialize_quick_structures()
 {
-  bzero(quick_rows, sizeof(quick_rows));
-  bzero(quick_key_parts, sizeof(quick_key_parts));
-  bzero(quick_costs, sizeof(quick_costs));
-  bzero(quick_n_ranges, sizeof(quick_n_ranges));
+  bzero(quick_rows, s->keys);
+  bzero(quick_key_parts, s->keys);
+  bzero(quick_costs, s->keys);
+  bzero(quick_n_ranges, s->keys);
 }

@@ -2417,6 +2417,13 @@ int SQL_SELECT::test_quick_select(THD *thd, key_map keys_to_use,
   DBUG_ASSERT(!head->is_filled_at_execution());
   if (keys_to_use.is_clear_all() || head->is_filled_at_execution())
     DBUG_RETURN(0);
+
+  if (!head->quick_structures_initialized)
+  {
+    head->initialize_quick_structures();
+    head->quick_structures_initialized= TRUE;
+  }
+
   records= head->stat_records();
   if (!records)
     records++;					/* purecov: inspected */
