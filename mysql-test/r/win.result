@@ -3788,5 +3788,18 @@ row_number() OVER()
 3
 DROP TABLE t1;
 #
+# MDEV-15313: Error with aggregate function inside of last_value() window function
+#
+CREATE TABLE t1(a int,b int);
+INSERT INTO t1 VALUES (1,1), (1,5),(1,4), (2,2),(2,5), (3,3),(4,4);
+INSERT INTO t1 VALUES (1,1), (1,5),(1,4), (2,2),(2,5), (3,3),(4,4);
+SELECT a, last_value(count(a)) OVER (partition BY a) FROM t1 GROUP BY a;
+a	last_value(count(a)) OVER (partition BY a)
+1	6
+2	4
+3	2
+4	2
+DROP TABLE t1;
+#
 # End of 10.2 tests
 #

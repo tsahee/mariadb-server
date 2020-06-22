@@ -10495,6 +10495,9 @@ window_func_expr:
 
 window_func:
           simple_window_func
+          {
+            ((Item_sum *) $1)->mark_as_window_func_sum_expr();
+          }
         |
           sum_expr
           {
