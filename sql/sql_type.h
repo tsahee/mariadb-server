@@ -94,6 +94,7 @@ class Conv_source;
 class ST_FIELD_INFO;
 class Type_collection;
 class Create_func;
+class Schema;
 
 #define my_charset_numeric      my_charset_latin1
 
@@ -3430,6 +3431,7 @@ public:
   static const Type_collection *
     type_collection_for_aggregation(const Type_handler *h1,
                                     const Type_handler *h2);
+  virtual Schema *schema() const;
   virtual const Type_collection *type_collection() const;
   static const
   Type_handler *aggregate_for_result_traditional(const Type_handler *h1,
@@ -6306,6 +6308,12 @@ public:
   {
     return true;
   }
+  bool Column_definition_set_attributes(THD *thd,
+                                        Column_definition *def,
+                                        const Lex_field_type_st &attr,
+                                        CHARSET_INFO *cs,
+                                        column_definition_type_t type)
+                                        const override;
   void Column_definition_implicit_upgrade(Column_definition *c) const override;
   bool
   Column_definition_attributes_frm_unpack(Column_definition_attributes *attr,

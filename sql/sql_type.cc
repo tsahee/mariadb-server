@@ -177,6 +177,12 @@ const Type_collection *Type_handler_row::type_collection() const
 }
 
 
+Schema *Type_handler::schema() const
+{
+  return &mariadb_schema;
+}
+
+
 bool Type_handler_data::init()
 {
 #ifdef HAVE_SPATIAL
@@ -2642,6 +2648,25 @@ Type_handler::Column_definition_set_attributes(THD *thd,
   def->charset= cs;
   def->set_length_and_dec(attr);
   return false;
+}
+
+
+bool
+Type_handler_timestamp_common::Column_definition_set_attributes(THD *thd,
+                                               Column_definition *def,
+                                               const Lex_field_type_st &attr,
+                                               CHARSET_INFO *cs,
+                                               column_definition_type_t type)
+                                               const
+{
+  /*
+    Unlike other types TIMESTAMP fields are NOT NULL by default.
+    Unless --explicit-defaults-for-timestamp is given.
+  */
+  if (!opt_explicit_defaults_for_timestamp)
+    def->flags|= NOT_NULL_FLAG;
+  return Type_handler::Column_definition_set_attributes(thd, def, attr,
+                                                        cs, type);
 }
 
 

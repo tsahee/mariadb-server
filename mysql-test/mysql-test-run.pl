@@ -178,6 +178,7 @@ my @DEFAULT_SUITES= qw(
     client-
     csv-
     compat/oracle-
+    compat/maxdb-
     compat/mssql-
     encryption-
     federated-

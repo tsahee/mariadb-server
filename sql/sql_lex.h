@@ -34,6 +34,7 @@
 #include "sql_tvc.h"
 #include "item.h"
 #include "sql_limit.h"                // Select_limit_counters
+#include "sql_schema.h"
 
 /* Used for flags of nesting constructs */
 #define SELECT_NESTING_MAP_SIZE 64
@@ -2349,6 +2350,7 @@ private:
 struct st_parsing_options
 {
   bool allows_variable;
+  bool lookup_keywords_after_qualifier;
 
   st_parsing_options() { reset(); }
   void reset();
@@ -4659,6 +4661,8 @@ public:
 
   Spvar_definition *row_field_name(THD *thd, const Lex_ident_sys_st &name);
 
+  bool map_data_type(const Lex_ident_sys_st &schema,
+                     Lex_field_type_st *type) const;
   bool set_field_type_udt(Lex_field_type_st *type,
                           const LEX_CSTRING &name,
                           const Lex_length_and_dec_st &attr);
